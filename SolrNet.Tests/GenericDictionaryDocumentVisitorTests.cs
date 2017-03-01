@@ -43,4 +43,3 @@ namespace SolrNet.Tests
 		}
 	}
 }
-
