@@ -60,6 +60,45 @@ namespace SolrNet.Tests
 		}
 
 		[Test]
+		public void ParseDocumentWithChildren()
+		{
+			var parser = GetDocumentParser<TestDocumentWithChildren>();
+			var xml = EmbeddedResource.GetEmbeddedXml(GetType(), "Resources.responseWithMultipleChildren.xml");
+			var docNode = xml.XPathSelectElement("response/result/doc");
+			var docs = parser.ParseDocument(docNode).ToList();
+			Assert.AreEqual(2, docs.Count);
+			Assert.AreEqual(123456, docs[0].Id);
+			Assert.AreEqual(123456, docs[1].Id);
+
+			Assert.AreEqual("abcdef", docs[0].ChildField);
+			Assert.AreEqual("wxyz", docs[1].ChildField);
+
+			Assert.AreEqual("child value", docs[0].SameFieldName);
+			Assert.AreEqual("child value", docs[1].SameFieldName);
+		}
+
+		[Test]
+		public void ParseResultsWithChildren()
+		{
+			var parser = GetDocumentParser<TestDocumentWithChildren>();
+			var xml = EmbeddedResource.GetEmbeddedXml(GetType(), "Resources.responseWithMultipleChildren.xml");
+			var resultNode = xml.XPathSelectElement("response/result");
+			var docs = parser.ParseResults(resultNode).ToList();
+			Assert.AreEqual(3, docs.Count);
+			Assert.AreEqual(123456, docs[0].Id);
+			Assert.AreEqual(123456, docs[1].Id);
+			Assert.AreEqual(789, docs[2].Id);
+
+			Assert.AreEqual("abcdef", docs[0].ChildField);
+			Assert.AreEqual("wxyz", docs[1].ChildField);
+			Assert.IsNull(docs[2].ChildField);
+
+			Assert.AreEqual("child value", docs[0].SameFieldName);
+			Assert.AreEqual("child value", docs[1].SameFieldName);
+			Assert.AreEqual("parent value", docs[2].SameFieldName);
+		}
+
+		[Test]
 		public void ParseDocumentWithMappingManager()
 		{
 			var mapper = new MappingManager();

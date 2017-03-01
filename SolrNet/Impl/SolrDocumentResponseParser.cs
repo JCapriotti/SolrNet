@@ -14,8 +14,10 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using SolrNet.Utils;
 
 namespace SolrNet.Impl
 {
@@ -81,16 +83,16 @@ namespace SolrNet.Impl
 				}
 			}
 
-			if (children.Count > 0)
-			{
+			if (children.Count > 0) {
 				foreach (var child in children)
 				{
+					var newDoc = ShallowClone.Clone(doc);
 					foreach (var field in child.Elements())
 					{
 						string fieldName = field.Attribute("name").Value;
-						propVisitor.Visit(doc, fieldName, field);
+						propVisitor.Visit(newDoc, fieldName, field);
 					}
-					docs.Add(doc);
+					docs.Add(newDoc);
 				}
 			}
 			else
